@@ -1,11 +1,12 @@
 #!/bin/bash
 
+##安裝HomeBrew，如果已安裝則跳過。
 install_brew() {
     if ! command -v "brew" &> /dev/null; then
         printf "Homebrew not found, installing."
         # install homebrew
         /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
-        # change owner
+        # change owner 不知道為什麼
         sudo chown -R $(whoami) /usr/local/Cellar
         sudo chown -R $(whoami) /usr/local/Homebrew
     fi
@@ -28,6 +29,7 @@ create_dirs() {
     done
 }
 
+##安裝Xcodee Command linee tools
 build_xcode() {
     if ! xcode-select --print-path &> /dev/null; then
         xcode-select --install &> /dev/null
@@ -43,15 +45,19 @@ build_xcode() {
 }
 
 main() {
+    ##建立需使用之目錄
     printf "🗄  Creating directories\n"
     create_dirs
 
+    ##安裝Xcode Command Line Tools
     printf "🛠  Installing Xcode Command Line Tools\n"
     build_xcode
 
+    ##安裝Homebrew 軟件
     printf "🍺  Installing Homebrew packages\n"
     install_brew
 
+    ##調整 Macos 系統設定
     printf "💻  Set macOS preferences\n"
     ./macos/.macos 
 
