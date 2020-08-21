@@ -4,128 +4,164 @@
 
 # Close any open System Preferences panes, to prevent them from overriding
 # settings we’re about to change
+# 先關閉所有的系統設定，以及錯誤
 osascript -e 'tell application "System Preferences" to quit'
 
 # Ask for the administrator password upfront
+# 要求管理員密碼
 sudo -v
 
 # Keep-alive: update existing `sudo` time stamp until `.macos` has finished
+# 關閉相關服務直到 .macos 設定結束
 while true; do sudo -n true; sleep 60; kill -0 "$$" || exit; done 2>/dev/null &
 
 ###############################################################################
-# General UI/UX                                                               #
+# General UI/UX  界面設定                                                      #
 ###############################################################################
 
 # Disable the sound effects on boot
+# 關閉開機音效設定
 sudo nvram SystemAudioVolume=" "
 
 # Set highlight color to pink
+# 設定高亮顏色為粉紅色
 defaults write NSGlobalDomain AppleHighlightColor -string "1 0.41176470588 0.70588235294"
 
 # Set sidebar icon size to medium
+# 設定Finder側邊欄圖標大小為中
 defaults write NSGlobalDomain NSTableViewDefaultSizeMode -int 4
 
 # Always show scrollbars
+# 永遠顯示滾動欄
 defaults write NSGlobalDomain AppleShowScrollBars -string "Always"
 # Possible values: `WhenScrolling`, `Automatic` and `Always`
 
 # Disable the over-the-top focus ring animation
-defaults write NSGlobalDomain NSUseAnimatedFocusRing -bool false
+# 禁用焦點環動畫，似乎沒有什麼做用，不做
+# defaults write NSGlobalDomain NSUseAnimatedFocusRing -bool false
 
 # Increase window resize speed for Cocoa applications
+# 加快視窗尺寸變化速速
 defaults write NSGlobalDomain NSWindowResizeTime -float 0.001
 
 # Expand save panel by default
+# 預設最大Save Panel，
 defaults write NSGlobalDomain NSNavPanelExpandedStateForSaveMode -bool true
 defaults write NSGlobalDomain NSNavPanelExpandedStateForSaveMode2 -bool true
 
 # Expand print panel by default
+# 預設最大列印視窗
 defaults write NSGlobalDomain PMPrintingExpandedStateForPrint -bool true
 defaults write NSGlobalDomain PMPrintingExpandedStateForPrint2 -bool true
 
 # Save to disk (not to iCloud) by default
+# 預設存檔本機而不是iCloud
 defaults write NSGlobalDomain NSDocumentSaveNewDocumentsToCloud -bool false
 
 # Automatically quit printer app once the print jobs complete
+# 自動關閉列印APP
 defaults write com.apple.print.PrintingPrefs "Quit When Finished" -bool true
 
 # Disable the “Are you sure you want to open this application?” dialog
+#停用“你確認開啓此程式”對話窗
 defaults write com.apple.LaunchServices LSQuarantine -bool false
 
 # Remove duplicates in the “Open With” menu (also see `lscleanup` alias)
+# 在“Open With”菜單中去除重複項
 /System/Library/Frameworks/CoreServices.framework/Frameworks/LaunchServices.framework/Support/lsregister -kill -r -domain local -domain system -domain user
 
 # Display ASCII control characters using caret notation in standard text views
 # Try e.g. `cd /tmp; unidecode "\x{0000}" > cc.txt; open -e cc.txt`
+# 在文字編輯中顯示ASCII 控制字元
 defaults write NSGlobalDomain NSTextShowsControlCharacters -bool true
 
 # Disable Resume system-wide
+# 禁用開機重新打開目前視窗
 defaults write com.apple.systempreferences NSQuitAlwaysKeepsWindows -bool false
 
 # Disable automatic termination of inactive apps
+# 禁用自動閞閉非活躍軟體
 defaults write NSGlobalDomain NSDisableAutomaticTermination -bool true
 
 # Disable the crash reporter
-#defaults write com.apple.CrashReporter DialogType -string "none"
+# 禁用當機報告
+defaults write com.apple.CrashReporter DialogType -string "none"
 
 # Set Help Viewer windows to non-floating mode
+# 使說明窗口不再置頂
 defaults write com.apple.helpviewer DevMode -bool true
 
 # Reveal IP address, hostname, OS version, etc. when clicking the clock
 # in the login window
-sudo defaults write /Library/Preferences/com.apple.loginwindow AdminHostInfo HostName
+# 在登入窗口點擊時間時，顯示IP，主機名，系統版本等
+#sudo defaults write /Library/Preferences/com.apple.loginwindow AdminHostInfo HostName
 
 # Disable Notification Center and remove the menu bar icon
-launchctl unload -w /System/Library/LaunchAgents/com.apple.notificationcenterui.plist 2> /dev/null
+# 關閉通知中心及圖標，似乎已經失效，不使用
+#launchctl unload -w /System/Library/LaunchAgents/com.apple.notificationcenterui.plist 2> /dev/null
 
 # Disable automatic capitalization as it’s annoying when typing code
+# 關閉自動大寫，在編碼時
 defaults write NSGlobalDomain NSAutomaticCapitalizationEnabled -bool false
 
 # Disable smart dashes as they’re annoying when typing code
+# 停用自動破折號
 defaults write NSGlobalDomain NSAutomaticDashSubstitutionEnabled -bool false
 
 # Disable automatic period substitution as it’s annoying when typing code
+# 停用自動時間轉換
 defaults write NSGlobalDomain NSAutomaticPeriodSubstitutionEnabled -bool false
 
 # Disable smart quotes as they’re annoying when typing code
+# 停用自動引用
 defaults write NSGlobalDomain NSAutomaticQuoteSubstitutionEnabled -bool false
 
 # Disable auto-correct
-defaults write NSGlobalDomain NSAutomaticSpellingCorrectionEnabled -bool false
+#停用自動修正，但我會需要所以啓用
+#defaults write NSGlobalDomain NSAutomaticSpellingCorrectionEnabled -bool false
 
 ###############################################################################
 # Trackpad, mouse, keyboard, Bluetooth accessories, and input                 #
+# 輸入，鍵盤，Pad，滑鼠                                                          #
 ###############################################################################
 
 # Trackpad: enable tap to click for this user and for the login screen
+# 打開輕點即點擊
 defaults write com.apple.driver.AppleBluetoothMultitouch.trackpad Clicking -bool true
 defaults -currentHost write NSGlobalDomain com.apple.mouse.tapBehavior -int 1
 defaults write NSGlobalDomain com.apple.mouse.tapBehavior -int 1
 
 # Trackpad: enable 3 finger drag
-defaults write com.apple.AppleMultitouchTrackpad Dragging -bool true
-defaults write com.apple.driver.AppleBluetoothMultitouch.trackpad Dragging -bool true
+# 打開三指移動視窗，似乎失效
+#defaults write com.apple.AppleMultitouchTrackpad Dragging -bool true
+#defaults write com.apple.driver.AppleBluetoothMultitouch.trackpad Dragging -bool true
 
 # Trackpad: map bottom right corner to right-click
-defaults write com.apple.driver.AppleBluetoothMultitouch.trackpad TrackpadCornerSecondaryClick -int 2
-defaults write com.apple.driver.AppleBluetoothMultitouch.trackpad TrackpadRightClick -bool true
-defaults -currentHost write NSGlobalDomain com.apple.trackpad.trackpadCornerClickBehavior -int 1
-defaults -currentHost write NSGlobalDomain com.apple.trackpad.enableSecondaryClick -bool true
+# 變更右下點擊為右鍵，似乎失效
+#defaults write com.apple.driver.AppleBluetoothMultitouch.trackpad TrackpadCornerSecondaryClick -int 2
+#defaults write com.apple.driver.AppleBluetoothMultitouch.trackpad TrackpadRightClick -bool true
+#defaults -currentHost write NSGlobalDomain com.apple.trackpad.trackpadCornerClickBehavior -int 1
+#defaults -currentHost write NSGlobalDomain com.apple.trackpad.enableSecondaryClick -bool true
 
 # Disable “natural” (Lion-style) scrolling
-defaults write NSGlobalDomain com.apple.swipescrolldirection -bool false
+# 停用自然滾動，但我已習慣，不停用
+#defaults write NSGlobalDomain com.apple.swipescrolldirection -bool false
 
 # Increase sound quality for Bluetooth headphones/headsets
+# 增加藍牙音質，不知道有沒有用
 defaults write com.apple.BluetoothAudioAgent "Apple Bitpool Min (editable)" -int 40
 
 # Enable full keyboard access for all controls
 # (e.g. enable Tab in modal dialogs)
+# 開啓鍵盤全面控制項
 defaults write NSGlobalDomain AppleKeyboardUIMode -int 3
 
 # Use scroll gesture with the Ctrl (^) modifier key to zoom
+# 使用按下 Ctrl 加上滾動上下，來調整放大縮小
 defaults write com.apple.universalaccess closeViewScrollWheelToggle -bool true
 defaults write com.apple.universalaccess HIDScrollZoomModifierMask -int 262144
 # Follow the keyboard focus while zoomed in
+# 放大縮小作用在鍵盤作用視窗上
 defaults write com.apple.universalaccess closeViewZoomFollowsFocus -bool true
 
 # Disable press-and-hold for keys in favor of key repeat
